@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/foodImage"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/food_icon"
+        android:contentDescription="Food Image" />
+
+    <TextView
+        android:id="@+id/foodName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Food Name"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+</LinearLayout>

@@ -1,0 +1,90 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Food Inventory RecyclerView on the left side -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/foodInventoryRecyclerView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_margin="8dp"
+        android:scrollbars="horizontal"
+        android:padding="8dp" />
+
+    <!-- Pet Image in the center -->
+    <ImageView
+        android:id="@+id/petImage"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/pet_image"
+        android:contentDescription="Pet Image" />
+
+    <!-- Pet Level above the pet image -->
+    <TextView
+        android:id="@+id/petLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/petImage"
+        android:layout_centerHorizontal="true"
+        android:text="Level: 1"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Pet EXP below the pet image -->
+    <TextView
+        android:id="@+id/petExp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/petImage"
+        android:layout_centerHorizontal="true"
+        android:text="EXP: 0 / 100"
+        android:textSize="18sp"
+        android:layout_marginTop="16dp" />
+
+    <!-- Money Balance below the EXP -->
+    <TextView
+        android:id="@+id/moneyBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/petExp"
+        android:layout_centerHorizontal="true"
+        android:text="Money: $0.00"
+        android:textSize="18sp"
+        android:layout_marginTop="8dp" />
+
+    <!-- Chat Button at the bottom right -->
+    <ImageView
+        android:id="@+id/chatButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_chat"
+        android:contentDescription="Chat Button" />
+
+    <!-- Task Button at the bottom center -->
+    <ImageView
+        android:id="@+id/taskButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_task"
+        android:contentDescription="Task Button" />
+
+    <!-- Shop Button at the bottom left -->
+    <ImageView
+        android:id="@+id/shopButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_shop"
+        android:contentDescription="Shop Button" />
+</RelativeLayout>
