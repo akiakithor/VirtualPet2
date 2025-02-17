@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +25,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ChatActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -42,6 +44,8 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        Intent serviceIntent = new Intent(this, PetBackgroundService.class);
+        startService(serviceIntent);
 
         SharedPreferences preferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         userName = preferences.getString("userName", "Anonymous");
@@ -63,20 +67,19 @@ public class ChatActivity extends AppCompatActivity {
             if (!messageText.isEmpty()) {
                 long timestamp = System.currentTimeMillis();
                 Message message = new Message(userName, messageText, timestamp);
+                message.setSeenBy(new ArrayList<>());  // Initialize seenBy list as ArrayList
 
-                // Push the message to Firebase
+
                 chatRef.push().setValue(message);
                 messageInput.setText("");
 
-                // Increment the messagesSent count
                 DatabaseReference taskRef = petRef.child("tasks/messagesSent");
                 taskRef.get().addOnSuccessListener(snapshot -> {
                     int currentMessagesSent = snapshot.exists() && snapshot.getValue(Integer.class) != null ? snapshot.getValue(Integer.class) : 0;
                     taskRef.setValue(currentMessagesSent + 1);
                 });
 
-                // Show notification with pet stats and the latest message
-                showPetStatusNotification(messageText);
+                showPetStatusNotification(userName, messageText);
             }
         });
 
@@ -94,7 +97,23 @@ public class ChatActivity extends AppCompatActivity {
                 messageList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Message message = dataSnapshot.getValue(Message.class);
-                    messageList.add(message);
+                    if (message != null) {
+                        // Ensure seenBy is initialized
+                        if (message.getSeenBy() == null) {
+                            message.setSeenBy(new ArrayList<>());  // Initialize if null
+                        }
+
+                        // Mark message as seen if not already marked
+                        if (!message.getSeenBy().contains(userName)) {
+                            message.getSeenBy().add(userName);
+                            chatRef.child(dataSnapshot.getKey()).setValue(message);  // Update in Firebase
+                        }
+
+                        messageList.add(message);
+                        if (!message.getSender().equals(userName)) {
+                            showMessageNotification(message.getSender(), message.getMessage());
+                        }
+                    }
                 }
                 chatAdapter.notifyDataSetChanged();
                 recyclerView.scrollToPosition(messageList.size() - 1);
@@ -102,11 +121,13 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error if necessary
             }
         });
+
     }
 
-    private void showPetStatusNotification(String latestMessage) {
+    private void showPetStatusNotification(String sender, String latestMessage) {
         petRef.child("pet").get().addOnSuccessListener(snapshot -> {
             if (snapshot.exists()) {
                 double health = snapshot.child("health").getValue(Double.class) != null ? snapshot.child("health").getValue(Double.class) : 100.0;
@@ -123,14 +144,36 @@ public class ChatActivity extends AppCompatActivity {
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.ic_pet_status) // Replace with your drawable resource
-                        .setContentTitle("Pet Status Update")
-                        .setContentText("Health: " + health + ", Happiness: " + happiness + ". Latest message: " + latestMessage)
+                        .setSmallIcon(R.drawable.ic_pet_status)
+                        .setContentTitle("New message from " + sender)
+                        .setContentText("Message: " + latestMessage + "\nHealth: " + health + ", Happiness: " + happiness)
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true);
 
                 notificationManager.notify(1, builder.build());
             }
         });
+    }
+
+    private void showMessageNotification(String sender, String message) {
+        String channelId = "message_channel";
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, "Message Notifications", NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        Intent intent = new Intent(this, ChatActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_message)
+                .setContentTitle("New message from " + sender)
+                .setContentText(message)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        notificationManager.notify(2, builder.build());
     }
 }

@@ -1,6 +1,8 @@
 package com.example.virtualpet2;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.DragEvent;
 import android.view.View;
@@ -8,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.database.DataSnapshot;
@@ -17,6 +21,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import android.Manifest;
+
 
 public class MainActivity extends AppCompatActivity {
     private int level = 1;
@@ -56,6 +63,16 @@ public class MainActivity extends AppCompatActivity {
         foodInventoryAdapter = new FoodInventoryAdapter(foodInventory);
         foodInventoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         foodInventoryRecyclerView.setAdapter(foodInventoryAdapter);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // API level 33
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Request permission
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        100);
+            }
+        }
 
         petImage.setOnDragListener((v, event) -> {
             if (event.getAction() == DragEvent.ACTION_DROP) {
