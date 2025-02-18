@@ -1,23 +1,17 @@
 package com.example.virtualpet2;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Message {
     private String sender;
     private String message;
-    private long timestamp;
-    private List<String> seenBy;  // Use List instead of Set
+    private long timestamp;  // Timestamp for message ordering
 
     public Message() {
-        this.seenBy = new ArrayList<>();  // Initialize the list
     }
 
     public Message(String sender, String message, long timestamp) {
         this.sender = sender;
         this.message = message;
         this.timestamp = timestamp;
-        this.seenBy = new ArrayList<>();  // Initialize the list
     }
 
     public String getSender() {
@@ -42,13 +36,5 @@ public class Message {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public List<String> getSeenBy() {
-        return seenBy;
-    }
-
-    public void setSeenBy(List<String> seenBy) {
-        this.seenBy = seenBy;
     }
 }
