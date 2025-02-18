@@ -15,6 +15,9 @@ public class ShopActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
 
         Button buyFoodButton = findViewById(R.id.buyFoodButton);
         petRef = FirebaseDatabase.getInstance().getReference("pet");

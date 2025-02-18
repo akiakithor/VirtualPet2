@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.DragEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,6 +15,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.Manifest;
-
 
 public class MainActivity extends AppCompatActivity {
     private int level = 1;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         petLevel = findViewById(R.id.petLevel);
         petExp = findViewById(R.id.petExp);
         moneyBalance = findViewById(R.id.moneyBalance);
@@ -56,9 +59,11 @@ public class MainActivity extends AppCompatActivity {
 
         foodInventoryRecyclerView = findViewById(R.id.foodInventoryRecyclerView);
         foodInventory = new ArrayList<>();
-        foodInventory.add(new Food("Apple", 10.0, 10.0));
-        foodInventory.add(new Food("Steak", 30.0, 30.0));
-        foodInventory.add(new Food("Fish", 20.0, 20.0));
+        foodInventory.add(new Food("Apple", 10.0, 10.0, R.drawable.apple));
+        foodInventory.add(new Food("Steak", 30.0, 50.0, R.drawable.steak));
+        foodInventory.add(new Food("Fish", 20.0, 20.0, R.drawable.fish));
+        foodInventory.add(new Food("Banana", 20.0, 30.0, R.drawable.banana));
+        foodInventory.add(new Food("Watermelon", 40.0, 60.0, R.drawable.watermelon));
 
         foodInventoryAdapter = new FoodInventoryAdapter(foodInventory);
         foodInventoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -78,6 +83,19 @@ public class MainActivity extends AppCompatActivity {
             if (event.getAction() == DragEvent.ACTION_DROP) {
                 Food droppedFood = (Food) event.getLocalState();
                 feedPet(droppedFood.getExpGain());
+
+                // Play the corresponding GIF based on the food type
+                if (droppedFood.getName().equals("Steak")) {
+                    playEatingGif(petImage, R.drawable.eatsteak);
+                } else if (droppedFood.getName().equals("Fish")) {
+                    playEatingGif(petImage, R.drawable.eatfish);
+                } else if (droppedFood.getName().equals("Banana")) {
+                    playEatingGif(petImage, R.drawable.eatbanana);
+                } else if (droppedFood.getName().equals("Watermelon")) {
+                    playEatingGif(petImage, R.drawable.eatmelon);
+                } else if (droppedFood.getName().equals("Apple")) {
+                    playEatingGif(petImage, R.drawable.eatapple);
+                }
             }
             return true;
         });
@@ -96,6 +114,9 @@ public class MainActivity extends AppCompatActivity {
             petRef.child("exp").setValue(exp);
             petRef.child("expRate").setValue(expRate);
             petRef.child("expNeeded").setValue(expNeeded);
+
+            // Play the cat GIF when the pet is tapped
+            playCatGif(petImage);
 
             // Increment pet taps in tasks
             tasksRef.child("petTaps").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -134,6 +155,13 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+
+        // Set idle GIF for the pet when the activity starts
+        Glide.with(this)
+                .asGif()
+                .load(R.drawable.idle) // Replace with your idle GIF resource
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(petImage);
     }
 
     private void feedPet(double expGain) {
@@ -150,5 +178,39 @@ public class MainActivity extends AppCompatActivity {
         petRef.child("exp").setValue(exp);
         petRef.child("expRate").setValue(expRate);
         petRef.child("expNeeded").setValue(expNeeded);
+    }
+
+    private void playCatGif(ImageView petImage) {
+        Glide.with(this)
+                .asGif()
+                .load(R.drawable.cat) // Replace with your cat GIF resource
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(petImage);
+
+        // Reset to idle GIF after 3 seconds
+        new Handler().postDelayed(() -> {
+            Glide.with(this)
+                    .asGif()
+                    .load(R.drawable.idle) // Replace with your idle GIF resource
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(petImage);
+        }, 3000); // 3 seconds delay
+    }
+
+    private void playEatingGif(ImageView petImage, int gifResource) {
+        Glide.with(this)
+                .asGif()
+                .load(gifResource)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(petImage);
+
+        // Reset to idle GIF after 3 seconds
+        new Handler().postDelayed(() -> {
+            Glide.with(this)
+                    .asGif()
+                    .load(R.drawable.idle) // Replace with your idle GIF resource
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(petImage);
+        }, 3000); // 3 seconds delay
     }
 }

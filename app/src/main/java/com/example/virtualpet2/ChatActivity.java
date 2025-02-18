@@ -44,6 +44,9 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         Intent serviceIntent = new Intent(this, PetBackgroundService.class);
         startService(serviceIntent);
 

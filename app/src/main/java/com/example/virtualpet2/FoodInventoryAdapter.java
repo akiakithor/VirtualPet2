@@ -28,6 +28,7 @@ public class FoodInventoryAdapter extends RecyclerView.Adapter<FoodInventoryAdap
     public void onBindViewHolder(@NonNull FoodViewHolder holder, int position) {
         Food food = foodList.get(position);
         holder.foodName.setText(food.getName());
+        holder.foodImage.setImageResource(food.getPhotoResId()); // Set the image
 
         // Drag functionality
         holder.itemView.setOnLongClickListener(v -> {
