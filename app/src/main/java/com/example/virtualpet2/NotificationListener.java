@@ -34,8 +34,8 @@ public class NotificationListener extends NotificationListenerService {
 
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             startForeground(1, new android.app.Notification.Builder(this, "notification_channel_id")
-                    .setContentTitle("Notification Listener Running")
-                    .setContentText("Listening for notifications")
+                    .setContentTitle("Virtual Pet 2")
+                    .setContentText("Cat Pet is bored")
                     .setSmallIcon(R.drawable.ic_notification)
                     .build());
         }
