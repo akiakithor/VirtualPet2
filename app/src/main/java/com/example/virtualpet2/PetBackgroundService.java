@@ -29,8 +29,8 @@ public class PetBackgroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         createNotificationChannel();
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Virtual Pet")
-                .setContentText("Your pet's stats are being updated in real-time.")
+                .setContentTitle("Virtual Pet 2")
+                .setContentText("Your pet's stats are being online.")
                 .setSmallIcon(R.drawable.ic_pet_notification) // Use an appropriate icon
                 .build();
         startForeground(1, notification);
