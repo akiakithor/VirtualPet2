@@ -1,16 +1,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
     <!-- Food Inventory RecyclerView on the left side -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/foodInventoryRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
         android:layout_margin="8dp"
-        tools:listitem="@layout/food_inventory_item" />
-
+        android:scrollbars="horizontal"
+        android:padding="8dp" />
 
     <!-- Pet Image in the center -->
     <ImageView
